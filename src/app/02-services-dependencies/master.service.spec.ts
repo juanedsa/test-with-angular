@@ -2,6 +2,7 @@
 
 import { MasterService } from './master.service';
 import { ValueService } from '../01-services/value.service';
+import { SecretsService } from '../01-services/secrets.service';
 
 describe('MasterService without Angular testing support', () => {
   let masterService: MasterService;
@@ -11,10 +12,21 @@ describe('MasterService without Angular testing support', () => {
     expect(masterService.getValue()).toBe('real value');
   });
 
+  it('#getSecretNumber should return real value from the real service', () => {
+    masterService = new MasterService(new ValueService(), new SecretsService());
+    expect(masterService.getSecretNumber()).toBe(123456);
+  });
+
   it('#getValue should return faked value from a fake object', () => {
     const fake = { getValue: () => 'fake value' };
     masterService = new MasterService(fake as ValueService);
     expect(masterService.getValue()).toBe('fake value');
+  });
+
+  it('#getSecretNumber should return faked value from a fake object', () => {
+    const fake = { getNumber: () => 987654321 };
+    masterService = new MasterService(new ValueService(), fake as SecretsService);
+    expect(masterService.getSecretNumber()).toBe(987654321);
   });
 
   it('#getValue should return stubbed value from a spy', () => {
